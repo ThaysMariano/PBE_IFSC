@@ -8,6 +8,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Objects;
 
 // Um tratador deve implementar a interface HttpHandler
 class MeuHandler implements HttpHandler {
@@ -16,64 +20,106 @@ class MeuHandler implements HttpHandler {
     // A requisição é representada por um objeto HttpExchange
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
+
+        //Atividade: um backend capaz de fornecer arquivos de acordo com as URI das requisições recebidas.
+
+        //pega a URI
+        URI uri = httpExchange.getRequestURI();
+
+        //transforma a URI em um caminho completo do arquivo CAMINHO WINDOWS!!
+        Path caminhoReal = Paths.get("C:/Users/thays/Desktop/pastaAtv/" + uri.getPath());
+
         // obtém um OutputStream para gerar o corpo da mensagem de resposta
         OutputStream outputStream = httpExchange.getResponseBody();
 
-        // Esta é a resposta a requisições tratadas por este HttpHandler !
-        String htmlResponse = "<html><body><h1 style='color:red'>Hello World! em HTML \\o/</h1></body></html>";
+        StringBuilder htmlResponse = new StringBuilder();
 
-        // Define o status da resposta, e o comprimento do corpo da mensagem  (em bytes)
-        httpExchange.sendResponseHeaders(200, htmlResponse.length());
+        //erro 404 caos nao ache
+        if (!Files.exists(caminhoReal)) {
+            htmlResponse = new StringBuilder("<html><body><h1>404! Path not found!</h1></body></html>");
+            httpExchange.sendResponseHeaders(404, htmlResponse.length());
+            outputStream.write(htmlResponse.toString().getBytes());
+            outputStream.close();
+            return;
+        }
 
-        //add o tipo da resṕosta
-        Headers headers = httpExchange.getResponseHeaders();
-        headers.set("Content-Type", "text/html");
+        //se o resultado do caminho é um diretorio:
+        if(Files.isDirectory(caminhoReal)){
 
-        // escreve o corpo da resposta
-        outputStream.write(htmlResponse.getBytes());
-        outputStream.flush();
-        outputStream.close();
-    }
+            String caminhoUri = uri.getPath();
 
-    static class MeuHandlerPortugues implements HttpHandler {
+            //cria html basico com titulo do arq atual
+            htmlResponse.append("<html><body><h1>Listagem de /").append(caminhoReal.getFileName()).append("</h1>");
 
-        @Override
-        public void handle(HttpExchange httpExchange) throws IOException {
-            OutputStream outputStream = httpExchange.getResponseBody();
+            //comeca a lista
+            htmlResponse.append("<ul>");
 
-            String htmlResponse = "Olá mundo!";
+            // --
+            File arquivos = caminhoReal.toFile();
+
+            File[] listagem = arquivos.listFiles();
+
+            if(listagem == null){
+                htmlResponse.append("<h2>Diretório Vazio!</h2>");
+            }else{
+                //percorre os aqruivos dentro desse diretorio
+                for(File f : Objects.requireNonNull(arquivos.listFiles())){
+                    htmlResponse.append("<li><a href='").append(caminhoUri.endsWith("/")? caminhoUri : STR."\{caminhoUri}/").append(f.getName()).append("'>").append(f.getName()).append("</a></li>");
+                }
+                //fecha a lista
+                htmlResponse.append("</ul>");
+            }
+
+            htmlResponse.append("</body></html>");
+
+
+
+
+            Headers headers = httpExchange.getResponseHeaders();
+            headers.set("Content-Type", "text/html");
 
             httpExchange.sendResponseHeaders(200, htmlResponse.length());
-            outputStream.write(htmlResponse.getBytes());
+
+            String resposta = htmlResponse.toString();
+
+            outputStream.write(resposta.getBytes());
             outputStream.flush();
             outputStream.close();
+
+
         }
-    }
+        //se o caminho da em um arquivo
+        if(Files.isRegularFile(caminhoReal)){
+
+            //descobre o tipo (extensao) do arquivo
+            String tipo = Files.probeContentType(caminhoReal);
+
+            //se for vazio (ver o que colocar)
+            if(tipo==null){
+                return;
+            }
+
+            //pega os bytes
+            byte[] bytes = Files.readAllBytes(caminhoReal);
+
+            //cria o header com o tipo e tamanho definido
+            Headers headers = httpExchange.getResponseHeaders();
+            headers.set("Content-Type", tipo);
+
+            httpExchange.sendResponseHeaders(200, bytes.length);
+
+            OutputStream output =httpExchange.getResponseBody();
+
+            output.write(bytes);
+            output.flush();
+            output.close();
 
 
-    static class MeuHandlerArquivo implements HttpHandler {
 
-        @Override
-        public void handle(HttpExchange httpExchange) throws IOException {
-            OutputStream outputStream = httpExchange.getResponseBody();
-
-            //pegar uri - verificar tipo arquivo - listar arquivos de diretorio - iterar e criar o html
-
-
-
-            String caminhoPadrao = "/home/aluno/pasta";
-            File arvTxt = new File(caminhoPadrao+"/texto");
-
-            String htmlResponse = "";
-
-            httpExchange.sendResponseHeaders(200, htmlResponse.length());
-            outputStream.write(htmlResponse.getBytes());
-            outputStream.flush();
-            outputStream.close();
         }
+
+
     }
-
-
 
 }
 
@@ -85,8 +131,6 @@ public class Main {
         HttpServer srv = HttpServer.create(new InetSocketAddress("localhost", 8080), 0);
 
         srv.createContext("/", new MeuHandler());
-        srv.createContext("/portugues", new MeuHandler.MeuHandlerPortugues());
-        srv.createContext("/a", new MeuHandler.MeuHandlerArquivo());
 
         // Executa o servidor HTTP
         srv.start();
