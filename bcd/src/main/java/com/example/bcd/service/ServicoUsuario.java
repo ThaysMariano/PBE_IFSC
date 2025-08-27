@@ -24,11 +24,8 @@ public class ServicoUsuario {
     }
 
     public Usuario buscaPorNome(String nome) {
-        Usuario usuario = new Usuario();
-        usuario.setFirstName(nome);
-        Example<Usuario> exemplo = Example.of(usuario);
 
-        return usuarioRepository.findOne(exemplo).orElse(null);
+        return usuarioRepository.findFirstByFirstName(nome);
     }
 
     public List<Usuario> buscaTodosComNome(String nome) {

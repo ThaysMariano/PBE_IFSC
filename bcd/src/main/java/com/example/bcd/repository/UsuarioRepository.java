@@ -13,4 +13,5 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     // busca todas entidades cuja coluna nome inicia com esta string
     List<Usuario> findByFirstNameStartingWith(String nome);
 
+    Usuario findFirstByFirstName(String nome);
 }

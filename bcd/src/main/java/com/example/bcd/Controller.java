@@ -5,10 +5,7 @@ import com.example.bcd.service.ServicoUsuario;
 import org.apache.catalina.LifecycleState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,6 +18,10 @@ public class Controller {
     @Autowired
     ServicoUsuario userServ;
 
+    record User(String nome, String sobrenome){}
+
+
+
     @GetMapping("/acessa/{nome}")
     public Usuario obtem_usuario(@PathVariable("nome") String nome){
         return userServ.buscaPorNome(nome);
@@ -32,8 +33,8 @@ public class Controller {
     }
 
     @PostMapping("/adiciona")
-    public Long adiciona_usuario(@Param("nome") String nome, @Param("sobrenome") String sobrenome){
-        return userServ.cria(nome, sobrenome);
+    public Long adiciona_usuario(@RequestBody User usuario){
+        return userServ.cria(usuario.nome, usuario.sobrenome);
     }
 
 
