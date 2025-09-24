@@ -2,10 +2,7 @@ package ads.pbe.calculadora.controller;
 
 import ads.pbe.calculadora.service.CalculadoraService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -28,11 +25,33 @@ public class CalculadoraController {
     }
 
     //soma
-    @PostMapping("soma")
+    @PutMapping("soma")
     public ResponseEntity<Calc> soma(@RequestBody Valor valor)  {
        CalculadoraService.soma(valor.num);
         return  ResponseEntity.ok(new Calc(true, calculadoraService.getAcc()));
     }
+
+    //reiniciar
+    @PutMapping("reinicio")
+    public ResponseEntity<Calc> reinicio()  {
+        calculadoraService.reinicia();
+        return  ResponseEntity.ok(new Calc(true, calculadoraService.getAcc()));
+    }
+
+    //subtracao
+    @PutMapping("subtracao")
+    public ResponseEntity<Calc> subtracao(@RequestBody Valor valor)  {
+        CalculadoraService.subtrair(valor.num);
+        return  ResponseEntity.ok(new Calc(true, calculadoraService.getAcc()));
+    }
+
+    //multiplicacao
+    @PutMapping("multiplicacao")
+    public ResponseEntity<Calc> multiplicacao(@RequestBody Valor valor)  {
+        CalculadoraService.multiplicar(valor.num);
+        return  ResponseEntity.ok(new Calc(true, calculadoraService.getAcc()));
+    }
+
 
 
 
