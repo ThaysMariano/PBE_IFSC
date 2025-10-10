@@ -1,0 +1,8 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:gs="http://soap.pbe.ads/">
+ <soapenv:Header/>
+ <soapenv:Body>
+ <gs:sayHello>
+ <gs:arg0>Eu</gs:arg0>
+ </gs:sayHello>
+ </soapenv:Body>
+</soapenv:Envelope>
