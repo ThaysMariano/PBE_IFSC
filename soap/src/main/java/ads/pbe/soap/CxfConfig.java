@@ -23,4 +23,5 @@ public class CxfConfig {
         endpoint.publish("/hello"); // A URI onde seu webservice é acessível
         return endpoint;
     }
+
 }

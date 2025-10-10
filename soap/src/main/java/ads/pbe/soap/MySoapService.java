@@ -10,4 +10,18 @@ public interface MySoapService {
 
     @WebMethod
     String sayHello(String name);
+
+    @WebMethod
+    int soma(int num1, int num2);
+
+    @WebMethod
+    int subtracao(int num1, int num2);
+
+    @WebMethod
+    int multiplicacao(int num1, int num2);
+
+    @WebMethod
+    String divisao(int num1, int num2);
+
+
 }
