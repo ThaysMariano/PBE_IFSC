@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SSE</title>
+
+</head>
+<body>
+
+<div id="result"></div>
+
+<script>
+    const x = document.getElementById("result");
+    // Check browser support for SSE
+    if(typeof(EventSource) !== "undefined") {
+      var source = new EventSource("eventos");
+      source.onmessage = function(event) {
+        x.innerHTML += event.data + "<br>";
+      };
+    } else {
+      x.innerHTML = "Sorry, no support for server-sent events.";
+    }
+</script>
+
+</body>
+</html>
