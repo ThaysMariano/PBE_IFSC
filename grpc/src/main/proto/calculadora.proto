@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+//calculadora
+
+option java_multiple_files = true;
+option java_package = "org.pbe.demo";
+option java_outer_classname = "CalculadoraProto";
+
+service Calculadora {
+  rpc soma (CalculadoraConta) returns (CalculadoraResposta);
+  rpc subtrai (CalculadoraConta) returns (CalculadoraResposta);
+  rpc multiplica (CalculadoraConta) returns (CalculadoraResposta);
+  rpc divide (CalculadoraConta) returns (CalculadoraResposta);
+}
+
+message CalculadoraConta{
+  double n1 = 1;
+  double n2 = 2;
+}
+
+message CalculadoraResposta{
+  double n3 = 1;
+}
+
+
+
+
+
